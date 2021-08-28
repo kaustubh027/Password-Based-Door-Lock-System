@@ -1,0 +1,223 @@
+// Code of System in the C language
+// PASSWORD BASED DOOR LOCK SYSTEM PROGRAM
+
+#include<reg51.h>
+
+sbit RS = P3^0;
+sbit EN = P3^1;
+
+sbit IN1 = P3^2;
+sbit IN2 = P3^3;
+
+char keypad();		// function Declaration
+
+void delay(int a)	// Delay Function
+{
+	int i,j;
+	for(i=0; i<a; i++)
+	for(j=0; j<1000; j++);
+
+}
+
+void lcd_cmd(int b)	// LCD Command Function
+{
+  	RS = 0;		//Command mode
+  	P3 = b;
+  	EN = 1;		//High Pulse
+  	delay(20);
+  	EN = 0;		//Low Pulse
+}
+
+void lcd_data(char c)	// LCD Data Function
+{
+  	RS = 1;		//Data
+  	P3 = c;
+  	EN = 1;		//High Pulse
+  	delay(20);
+  	EN = 0;		//Low Pulse
+}
+
+void print(char *string)	// function for display Data 
+{
+  while(*string != '\0')	// condition for null of the string
+  {	
+	lcd_data(*string);	//Writing the value of Char
+	string++;  		//Next address
+  }
+}
+
+void lcd_init()
+{	
+	//Basic Command of LCD
+  	
+	lcd_cmd(0x01);		//Clear Display
+  	lcd_cmd(0x0E);		//Display ON, cursor blinking
+  	lcd_cmd(0x80);		//Force cursor to beginning of first line
+	lcd_cmd(0x38);		//2 lines and 5×7 matrix
+}
+
+void main()
+{ 
+	int password[5] = {1,2,3,4,5};		// Pre define Password for system
+	int pin_entered[5];
+	int i;
+	lcd_init();
+
+	while(1)
+	{
+		
+		// Welcome Message
+		print("Please Enter Password");
+		delay(50);	
+
+		// logic for creating array of keypad entered key
+		for(i = 0; i<=5; i++)
+  		{
+     			pin_entered[i] = keypad();
+  		}
+
+		// Comparing Entered Password and predefine password
+
+		if (password == pin_entered)
+		{
+			print("THE DOOR IS OPENING"); 		// LCD Message
+			lcd_cmd(0xC0);				// Next line i.e. 2 
+			print("PLEASE WAIT");	
+
+			// DC Motor Rotation - Clockwise
+			IN1 = 1;
+			IN2 = 2;	
+		}
+		
+		else
+		{
+			print("SORRY PLEASE ENTER VALID PASSWORD");
+
+			// No Rotation of DC Motor
+			IN1 = 0;
+			IN2 = 0;
+		}
+
+	}
+	
+	 
+}
+
+char keypad()		// Keypad Function
+{
+	while(1)
+	{
+	
+	{
+		P1=0xFE;
+		if(P1==0xEE)
+		{
+			lcd_data('7');
+			delay(100);
+			return '7';
+		}
+		if(P1==0xDE)
+		{
+			lcd_data('8');
+			delay(100);
+			return '8';
+		}
+		if(P1==0xBE)
+		{
+			lcd_data('9');
+			delay(100);
+			return '9';
+		}
+		else if(P1==0x7E)
+		{
+			lcd_data('/');
+			delay(100);
+			return '/';
+		}
+		
+	}
+
+	{
+		P1=0xFD;
+		if(P1==0xED)
+		{
+			lcd_data('4');
+			delay(100);
+			return '4';
+		}
+		if(P1==0xDD)
+		{
+			lcd_data('5');
+			delay(100);
+			return '5';
+		}
+		if(P1==0xBD)
+		{
+			lcd_data('6');
+			delay(100);
+			return '6';
+		}
+		else if (P1==0x7D)
+		{
+			lcd_data('*');
+			delay(100);
+			return '*';
+		}
+	}
+	{
+		P1=0xFB;
+		if(P1==0xEB)
+		{
+			lcd_data('1');
+			delay(100);
+			return '1';
+		}
+		if(P1==0xDB)
+		{
+			lcd_data('2');
+			delay(100);
+			return '2';
+		}
+		if(P1==0xBB)
+		{
+			lcd_data('3');
+			delay(100);
+			return '3';
+		}
+		else if(P1==0x7B)
+		{
+			lcd_data('-');
+			delay(100);
+			return '-';
+		}
+	}
+	
+	{
+		P1=0xF7;
+		if(P1==0xE7)
+		{
+			lcd_data('C');
+			delay(100);
+			return 'C';
+		}
+		if(P1==0xD7)
+		{
+			lcd_data('0');
+			delay(100);
+			return '0';
+		}
+		if(P1==0xB7)
+		{
+			lcd_data('=');
+			delay(100);
+			return '=';
+		}
+		else if(P1==0x77)
+		{
+			lcd_data('+');
+			delay(100);
+			return '+';
+		}
+	}
+}
+}
