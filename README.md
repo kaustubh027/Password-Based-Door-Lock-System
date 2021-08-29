@@ -14,3 +14,5 @@ Also we can develop a system in which password will input from a user and save i
 The door is connected to system with the help of dc motor
 
 DC motor controls the action of opening and closing the door.
+
+LCD gives the user friendly interface for the message 
